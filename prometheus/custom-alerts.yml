@@ -1,0 +1,52 @@
+groups:
+  - name: AppCustomAlerts
+    rules:
+      - alert: WARNING-HighLatency
+        expr: gallery_get_time_seconds_max{} > 15
+        for: 60s
+        labels:
+          severity: warning
+        annotations:
+          summary: Increased info retrieval latency {{ $labels.value}} {{ $value }}
+          description: "A container has lagged\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - alert: CRITICAL-LowQuality
+        expr: gallery_get_time_seconds_max{} > 29
+        for: 120s
+        labels:
+          severity: critical
+        annotations:
+          summary: Increased info retrieval latency {{ $labels.value}} {{ $value }}
+          description: "A container has lagged\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - alert: WARNING-LowQuality
+        expr: rate(http_server_requests_seconds_max{outcome="CLIENT_ERROR"}[1m]) > 0.0001
+        for: 10s
+        labels:
+          severity: warning
+        annotations:
+          summary: Increased info retrieval latency {{ $labels.value}} {{ $value }}
+          description: "A container has lagged\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - alert: CRITICAL-HighLatency
+        expr: rate(http_server_requests_seconds_max{outcome="CLIENT_ERROR"}[1m]) > 0.001
+        for: 10s
+        labels:
+          severity: critical
+        annotations:
+          summary: Increased info retrieval latency {{ $labels.value}} {{ $value }}
+          description: "A container has lagged\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - alert: WARNING-MongoDBContainerDown
+        expr: time() - container_last_seen{image="mongo:5.0.2"} > 20
+        for: 60s
+        labels:
+          severity: warning
+        annotations:
+          summary: Application container down (instance {{ $labels.instance }})
+          description: "Application container has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - alert: CRITICAL-MongoDBContainerDown
+        expr: time() - container_last_seen{image="mongo:5.0.2"} > 60
+        for: 120s
+        labels:
+          severity: critical
+        annotations:
+          summary: Application container down (instance {{ $labels.instance }})
+          description: "Application container has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
